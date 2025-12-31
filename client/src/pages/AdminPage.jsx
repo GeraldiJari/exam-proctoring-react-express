@@ -4,6 +4,29 @@ import { socket } from "../socket";
 export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [logs, setLogs] = useState([]);
+  const MESSAGE_TEMPLATES = [
+    "Harap kembali ke fullscreen.",
+    "Aktivitas mencurigakan terdeteksi.",
+    "Ini peringatan terakhir.",
+  ];
+  const [message, setMessage] = useState("");
+
+  const sendCommand = (userId, command, customMessage = "") => {
+    socket.emit("ADMIN_COMMAND", {
+      examId: 123,
+      userId,
+      command,
+      message: customMessage,
+      duration: 30000,
+    });
+
+    setLogs((prev) => [
+      `[ADMIN] Sent ${command} to ${userId}`,
+      ...prev,
+    ]);
+  };
+
+
 
   useEffect(() => {
     // connect socket (reuse singleton)
@@ -55,18 +78,66 @@ export default function AdminDashboard() {
       </h1>
 
       {/* Online Users */}
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-2">Online Users</h2>
-        {users.length === 0 ? (
-          <p className="text-gray-500">No active users</p>
-        ) : (
-          <ul className="list-disc pl-6">
-            {users.map((u) => (
-              <li key={u}>{u}</li>
-            ))}
-          </ul>
-        )}
-      </div>
+    <div className="mb-6">
+      <h2 className="text-lg font-semibold mb-2">Online Users</h2>
+
+      {users.length === 0 ? (
+        <p className="text-gray-500">No active users</p>
+      ) : (
+        users.map((u) => (
+          <div
+            key={u}
+            className="border rounded p-3 mb-3 bg-gray-50"
+          >
+            <strong>{u}</strong>
+
+            {/* Template buttons */}
+            <div className="flex gap-2 mt-2 flex-wrap">
+              {MESSAGE_TEMPLATES.map((tpl, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => sendCommand(u, "MESSAGE", tpl)}
+                  className="px-2 py-1 bg-indigo-500 text-white rounded text-sm"
+                >
+                  {tpl}
+                </button>
+              ))}
+            </div>
+
+            {/* Custom message */}
+            <div className="flex gap-2 mt-2">
+              <input
+                type="text"
+                placeholder="Custom message..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                className="border px-2 py-1 flex-1 rounded"
+              />
+              <button
+                onClick={() => {
+                  sendCommand(u, "MESSAGE", message);
+                  setMessage("");
+                }}
+                className="px-3 py-1 bg-green-600 text-white rounded"
+              >
+                Send
+              </button>
+            </div>
+
+            {/* Lock */}
+            <button
+              onClick={() =>
+                sendCommand(u, "LOCK", "Ujian dikunci sementara")
+              }
+              className="mt-2 px-3 py-1 bg-red-600 text-white rounded"
+            >
+              Lock 30s
+            </button>
+          </div>
+        ))
+      )}
+    </div>
+
 
       {/* Logs */}
       <div>

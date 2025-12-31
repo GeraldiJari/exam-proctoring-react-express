@@ -35,5 +35,5 @@ export function useAntiCheat({ enabled, onNotify, max = 3 }) {
     };
   }, [enabled]);
 
-  return { violations, locked, violation };
+  return { violations, locked, violation, logs };
 }

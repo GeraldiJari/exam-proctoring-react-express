@@ -25,6 +25,9 @@ export default function ExamPage() {
   const [violations, setViolations] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [showScreenshots, setShowScreenshots] = useState(false);
+  const [examLocked, setExamLocked] = useState(false);
+
+
 
   /* ================= SOCKET LIFECYCLE ================= */
 
@@ -48,6 +51,36 @@ export default function ExamPage() {
       userId: USER_ID,
     });
   }, [examReady]);
+
+  // Admin Action
+  useEffect(() => {
+    socket.on("CLIENT_COMMAND", (data) => {
+      console.log("CLIENT_COMMAND:", data);
+
+      if (data.command === "LOCK") {
+        setViolationMsg(data.message || "Ujian dikunci sementara");
+
+        // lock UI
+        setSubmitted(false);
+        setExamLocked(true);
+
+        setTimeout(() => {
+          setExamLocked(false);
+          setViolationMsg(null);
+        }, data.duration || 30000);
+      }
+
+      if (data.command === "MESSAGE") {
+        setViolationMsg(data.message);
+      }
+    });
+
+    return () => {
+      socket.off("CLIENT_COMMAND");
+    };
+  }, []);
+
+
 
   /* ================= SCREEN CAPTURE ================= */
 
