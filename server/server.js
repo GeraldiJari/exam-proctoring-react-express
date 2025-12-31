@@ -72,6 +72,22 @@ io.on("connection", (socket) => {
       }
     }
   });
+
+  socket.on("ADMIN_COMMAND", (data) => {
+    console.log("ADMIN_COMMAND:", data);
+
+    const { examId, userId } = data;
+
+    const exam = examUsers.get(examId);
+    if (!exam) return;
+
+    const user = exam.get(userId);
+    if (!user) return;
+
+    // kirim command ke peserta tertentu
+    io.to(user.socketId).emit("CLIENT_COMMAND", data);
+  });
+
 });
 
 // START SERVER
