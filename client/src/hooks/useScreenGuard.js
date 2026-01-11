@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 export function useScreenCaptureDemo({
   enabled,
-  interval = 15000,
+  interval = 30000,
   onCapture,
 }) {
   const streamRef = useRef(null);
@@ -32,6 +32,7 @@ export function useScreenCaptureDemo({
   useEffect(() => {
     if (!enabled || !streamRef.current) return;
 
+    //konversi video ke gambar
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
@@ -39,6 +40,7 @@ export function useScreenCaptureDemo({
       const video = videoRef.current;
       if (!video || video.videoWidth === 0) return;
 
+      
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       ctx.drawImage(video, 0, 0);

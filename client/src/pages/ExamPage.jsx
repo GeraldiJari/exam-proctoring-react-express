@@ -11,11 +11,26 @@ import { uploadExamScreenshot } from "../services/examApi";
 import { socket } from "../socket";
 
 export default function ExamPage() {
+
+  const USER_ID = "695a579eef7cf7ac7d9b2f1d"; // _id user
+  const EXAM_ID = "695a57ccef7cf7ac7d9b2f23"; // _id exam
+
   const webcamRef = useRef(null);
   const screenshotsRef = useRef([]);
+  const [user, setUser] = useState(null);
+  const [exam, setExam] = useState(null);
 
-  const EXAM_ID = 123;
-  const USER_ID = "A001";
+  useEffect(() => {
+    fetch(`http://localhost:3000/api/users/${USER_ID}`)
+      .then((res) => res.json())
+      .then(setUser)
+      .catch(console.error);
+
+    fetch(`http://localhost:3000/api/exams/${EXAM_ID}`)
+      .then((res) => res.json())
+      .then(setExam)
+      .catch(console.error);
+  }, []);
 
   const MAX_VIOLATIONS = 9;
 
@@ -26,8 +41,6 @@ export default function ExamPage() {
   const [submitted, setSubmitted] = useState(false);
   const [showScreenshots, setShowScreenshots] = useState(false);
   const [examLocked, setExamLocked] = useState(false);
-
-
 
   /* ================= SOCKET LIFECYCLE ================= */
 
@@ -85,7 +98,7 @@ export default function ExamPage() {
   /* ================= SCREEN CAPTURE ================= */
 
   const { startShare } = useScreenCaptureDemo({
-    enabled: examReady && !submitted,
+    enabled: examReady && !submitted,     //start capture when exam is ready and not submitted
     interval: 30000,
     onCapture: async (blob) => {
       screenshotsRef.current.push({
@@ -134,7 +147,9 @@ export default function ExamPage() {
   );
 
   useRestriction({
+    //Condition to enable restriction/hook
     enabled: examReady && !submitted,
+
     onViolation: handleViolation,
   });
 
@@ -164,9 +179,16 @@ export default function ExamPage() {
     setExamReady(true);
   };
 
-
-
   /* ================= UI ================= */
+
+  if (started && (!user || !exam)) {
+  return (
+    <div className="h-screen flex items-center justify-center">
+      <p className="text-gray-600">Memuat data ujian...</p>
+    </div>
+  );
+}
+
 
   if (!started) {
     return <StartExamScreen onStart={startExam} />;
@@ -192,7 +214,11 @@ export default function ExamPage() {
 
   return (
     <div className="w-screen h-screen flex flex-col bg-white">
-      <ExamHeader title="YEEEY" time="0" />
+      <ExamHeader
+        title={exam.title}
+        userName={user.name}
+        time="00:00"
+      />
 
       <button
         onClick={() => setShowScreenshots(true)}
