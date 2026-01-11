@@ -1,8 +1,13 @@
 import { Router } from "express";
 import multer from "multer";
-import { uploadScreenshot } from "../controllers/exam.controller.js";
+import {
+  uploadScreenshot,
+  getExamById,
+} from "../controllers/exam.controller.js";
 
 const router = Router();
+
+router.get("/:id", getExamById);
 
 const storage = multer.diskStorage({
   destination: "src/uploads/screenshots",
@@ -15,7 +20,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.post(
-  "/exams/:examId/screenshots",
+  "/:examId/screenshots",
   upload.single("screenshot"),
   uploadScreenshot
 );

@@ -13,8 +13,8 @@ export default function AdminDashboard() {
 
   const sendCommand = (userId, command, customMessage = "") => {
     socket.emit("ADMIN_COMMAND", {
-      examId: 123,
-      userId,
+      examId: "695a57ccef7cf7ac7d9b2f23",
+      userId: "695a579eef7cf7ac7d9b2f1d",
       command,
       message: customMessage,
       duration: 30000,
@@ -87,9 +87,10 @@ export default function AdminDashboard() {
         users.map((u) => (
           <div
             key={u}
-            className="border rounded p-3 mb-3 bg-gray-50"
+            className="border rounded p-3 mb-3 bg-gray-800"
           >
-            <strong>{u}</strong>
+            User : 
+            <strong> {u}</strong>
 
             {/* Template buttons */}
             <div className="flex gap-2 mt-2 flex-wrap">
@@ -97,7 +98,7 @@ export default function AdminDashboard() {
                 <button
                   key={idx}
                   onClick={() => sendCommand(u, "MESSAGE", tpl)}
-                  className="px-2 py-1 bg-indigo-500 text-white rounded text-sm"
+                  className="px-2 py-1 bg-indigo-500 text-black rounded text-sm"
                 >
                   {tpl}
                 </button>

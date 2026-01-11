@@ -9,33 +9,24 @@ export function useRestriction({
   useEffect(() => {
     if (!enabled) return;
 
-    /* =============================
-       TAB & FOCUS GUARD
-    ============================== */
     const onBlur = () => {
-      onViolation("Gak usah aneh2");
+      onViolation("Perpindahan Tab Terdeteksi");
     };
 
     const onVisibility = () => {
       if (document.hidden) {
-        onViolation("Gak usah aneh2");
+        onViolation("Perpindahan Tab Terdeteksi");
       }
     };
 
-    /* =============================
-       COPY / PASTE / CUT
-    ============================== */
     const blockClipboard = (e) => {
       e.preventDefault();
-      onViolation("Gak usah aneh2");
+      onViolation("Percobaan Copy Paste Cut");
     };
 
-    /* =============================
-       SCREENSHOT (BEST EFFORT)
-    ============================== */
     const onKey = (e) => {
       if (!allowPrintScreen && e.key === "PrintScreen") {
-        onViolation("Gak usah aneh2");
+        onViolation("Percobaan Screenshot");
       }
 
       // Shortcut umum
@@ -43,7 +34,7 @@ export function useRestriction({
         const forbidden = ["c", "v", "x", "a", "s", "p"];
         if (forbidden.includes(e.key.toLowerCase())) {
           e.preventDefault();
-          onViolation("Gak usah aneh2");
+          onViolation("Percobaan Copy Paste");
         }
       }
     };
